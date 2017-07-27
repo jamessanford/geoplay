@@ -4,11 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/jamessanford/geoplay/latlonpb"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -32,9 +30,13 @@ func runClient(addr string, lat, lon float64) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Can just print 'r' as a string, but this makes human readable output.
-	pretty := proto.MarshalTextString(r)
-	os.Stdout.WriteString(pretty)
+
+	// This is silly, but the built in proto.MarshalTextString
+	// generates octal escapes. See protobuf/text/text.go:func writeString
+	// To get valid UTF-8, serialize it ourselves.
+	for _, f := range r.Location {
+		fmt.Printf("location: <\n  name: %q\n  lat: %f\n  lon: %f\n  distance: %f\n>\n", f.Name, f.Lat, f.Lon, f.Distance)
+	}
 }
 
 func dealWithLocFlag(location string) (lat float64, lon float64, err error) {
