@@ -2,6 +2,9 @@
 
 Toy server accepts RPCs with latitude/longitude and returns the 10 nearest Starbucks locations.
 
+[![GoDoc](https://godoc.org/github.com/jamessanford/geoplay?status.svg)](https://godoc.org/github.com/jamessanford/geoplay)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jamessanford/geoplay)](https://goreportcard.com/report/github.com/jamessanford/geoplay)
+
 #### Install, run, request
 
 ```
@@ -16,7 +19,7 @@ A letmegrpc HTTP handler is at http://localhost:6796/GeoLookup/Lookup
 
 Prometheus metrics with `go-grpc-prometheus` support are at http://localhost:6796/metrics
 
-grpc is on port 6797 by default (-grpc.listen flag)
+grpc is on port 6797 by default (-grpc.addr flag)
 
 grpc uses [x/net/trace](https://godoc.org/golang.org/x/net/trace) by default, check out http://localhost:6796/debug/requests and http://localhost:6796/debug/events after making some RPCs.
 
