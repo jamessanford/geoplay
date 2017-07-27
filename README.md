@@ -33,4 +33,4 @@ Instead of "rolling your own" this way, there are various "microservice helpers"
 -	https://github.com/google/go-microservice-helpers
 -	https://github.com/go-kit/kit
 
-The `starbucks.json` file came from https://github.com/mmcloughlin/starbucks
+The `data/locations.json` file came from https://github.com/mmcloughlin/starbucks
