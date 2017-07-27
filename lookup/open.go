@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/jamessanford/geoplay/data"
 	"github.com/tidwall/buntdb"
 )
 
@@ -18,8 +19,13 @@ const memoryFile = ":memory:"
 
 func populateFromFileOrBuiltin(db *buntdb.DB, locationFile string) error {
 	var r io.Reader
+
 	if _, err := os.Stat(locationFile); os.IsNotExist(err) {
-		r = bytes.NewReader([]byte("[]")) // TODO FIXME: not implemented
+		a, err := data.Asset("locations.json")
+		if err != nil {
+			return err
+		}
+		r = bytes.NewReader(a)
 	} else {
 		f, err := os.Open(locationFile)
 		if err != nil {
