@@ -36,14 +36,12 @@ func (lu *DB) FindNearest(lat, lon float64, maxResults int) (Locations, error) {
 		lat, lon = 37.486, -122.232 // default Redwood City, CA
 	}
 	dest := geo.NewPoint(lat, lon)
-
-	// put Location in a struct so that append() outside this scope works
-	found := struct{ Loc []*Location }{}
+	found := make(Locations, 0, maxResults)
 
 	// actually searches the square that fits inside circle of radius
 	radius := initialRadius
-	for ; radius < maxRadius && len(found.Loc) < maxResults; radius *= 2 {
-		found.Loc = []*Location{} // erase results from previous pass
+	for ; radius < maxRadius && len(found) < maxResults; radius *= 2 {
+		found = found[:0] // erase results from previous pass
 
 		ul := dest.PointAtDistanceAndBearing(radius, 360.0-45.0)
 		lr := dest.PointAtDistanceAndBearing(radius, 90.0+45.0)
@@ -59,7 +57,7 @@ func (lu *DB) FindNearest(lat, lon float64, maxResults int) (Locations, error) {
 				res := strings.TrimSuffix(strings.TrimPrefix(key, "store:"), ":pos")
 				r, _ := buntdb.IndexRect(val)
 				dist := dest.GreatCircleDistance(geo.NewPoint(r[1], r[0]))
-				found.Loc = append(found.Loc, &Location{
+				found = append(found, &Location{
 					Name:     res,
 					Lat:      r[1],
 					Lon:      r[0],
@@ -71,9 +69,9 @@ func (lu *DB) FindNearest(lat, lon float64, maxResults int) (Locations, error) {
 			return nil, err
 		}
 	}
-	sort.Sort(ByDistance{found.Loc})
-	if len(found.Loc) > maxResults {
-		found.Loc = found.Loc[:maxResults]
+	sort.Sort(ByDistance{found})
+	if len(found) > maxResults {
+		found = found[:maxResults]
 	}
-	return found.Loc, nil
+	return found, nil
 }
